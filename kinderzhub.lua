@@ -1,135 +1,135 @@
--- KinderzHub - Version Fixée
-print("✅ KinderzHub est en train de se charger...")
+-- KinderzHub - King Legacy (Version Stable)
+print("✅ KinderzHub est en train de charger...")
 
 local player = game.Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
--- Supprime l'ancien GUI s'il existe déjà
+-- Supprime l'ancien menu
 if playerGui:FindFirstChild("KinderzHub") then
-    playerGui.KinderzHub:Destroy()
+    playerGui:FindFirstChild("KinderzHub"):Destroy()
 end
 
-local gui = Instance.new("ScreenGui")
-gui.Name = "KinderzHub"
-gui.ResetOnSpawn = false
-gui.IgnoreGuiInset = true
-gui.Parent = playerGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "KinderzHub"
+screenGui.ResetOnSpawn = false
+screenGui.IgnoreGuiInset = true
+screenGui.Parent = playerGui
 
--- Main Frame
-local main = Instance.new("Frame")
-main.Name = "MainFrame"
-main.Size = UDim2.new(0, 460, 0, 420)
-main.Position = UDim2.new(0.5, -230, 0.5, -210)
-main.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-main.BorderSizePixel = 0
-main.Parent = gui
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "MainFrame"
+mainFrame.Size = UDim2.new(0, 480, 0, 440)
+mainFrame.Position = UDim2.new(0.5, -240, 0.5, -220)
+mainFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 18)
+mainFrame.BorderSizePixel = 0
+mainFrame.Parent = screenGui
 
-local corner = Instance.new("UICorner")
-corner.CornerRadius = UDim.new(0, 16)
-corner.Parent = main
+local uiCorner = Instance.new("UICorner")
+uiCorner.CornerRadius = UDim.new(0, 14)
+uiCorner.Parent = mainFrame
 
 -- Titre
 local title = Instance.new("TextLabel")
-title.Size = UDim2.new(1, 0, 0, 60)
-title.BackgroundColor3 = Color3.fromRGB(255, 85, 0)
+title.Size = UDim2.new(1, 0, 0, 65)
+title.BackgroundColor3 = Color3.fromRGB(255, 100, 0)
 title.Text = "KinderzHub"
-title.TextColor3 = Color3.new(1,1,1)
+title.TextColor3 = Color3.new(1, 1, 1)
 title.Font = Enum.Font.GothamBold
-title.TextSize = 26
-title.Parent = main
+title.TextSize = 28
+title.Parent = mainFrame
 
 local titleCorner = Instance.new("UICorner")
-titleCorner.CornerRadius = UDim.new(0, 16)
+titleCorner.CornerRadius = UDim.new(0, 14)
 titleCorner.Parent = title
 
 -- Version
-local version = Instance.new("TextLabel")
-version.Size = UDim2.new(1, 0, 0, 20)
-version.Position = UDim2.new(0, 0, 0, 40)
-version.BackgroundTransparency = 1
-version.Text = "King Legacy • Free"
-version.TextColor3 = Color3.fromRGB(255, 180, 80)
-version.Font = Enum.Font.Gotham
-version.TextSize = 14
-version.Parent = main
+local ver = Instance.new("TextLabel")
+ver.Size = UDim2.new(1,0,0,20)
+ver.Position = UDim2.new(0,0,0,45)
+ver.BackgroundTransparency = 1
+ver.Text = "King Legacy • Free"
+ver.TextColor3 = Color3.fromRGB(255, 200, 100)
+ver.Font = Enum.Font.Gotham
+ver.TextSize = 14
+ver.Parent = mainFrame
 
 -- Scrolling
-local scroll = Instance.new("ScrollingFrame")
-scroll.Size = UDim2.new(1, -20, 1, -100)
-scroll.Position = UDim2.new(0, 10, 0, 70)
-scroll.BackgroundTransparency = 1
-scroll.ScrollBarThickness = 6
-scroll.Parent = main
+local scrolling = Instance.new("ScrollingFrame")
+scrolling.Size = UDim2.new(1, -24, 1, -100)
+scrolling.Position = UDim2.new(0, 12, 0, 75)
+scrolling.BackgroundTransparency = 1
+scrolling.ScrollBarThickness = 6
+scrolling.Parent = mainFrame
 
-local layout = Instance.new("UIListLayout")
-layout.Padding = UDim.new(0, 12)
-layout.SortOrder = Enum.SortOrder.LayoutOrder
-layout.Parent = scroll
+local listLayout = Instance.new("UIListLayout")
+listLayout.Padding = UDim.new(0, 10)
+listLayout.SortOrder = Enum.SortOrder.LayoutOrder
+listLayout.Parent = scrolling
 
-local function CreateToggle(name)
-    local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(1, -10, 0, 58)
-    frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-    frame.Parent = scroll
+local function addToggle(text)
+    local toggleFrame = Instance.new("Frame")
+    toggleFrame.Size = UDim2.new(1, -10, 0, 60)
+    toggleFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    toggleFrame.Parent = scrolling
 
-    local c = Instance.new("UICorner")
-    c.CornerRadius = UDim.new(0, 12)
-    c.Parent = frame
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 10)
+    corner.Parent = toggleFrame
 
     local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(0.65, 0, 1, 0)
+    label.Size = UDim2.new(0.7, 0, 1, 0)
     label.BackgroundTransparency = 1
-    label.Text = "   " .. name
+    label.Text = "   " .. text
     label.TextColor3 = Color3.new(1,1,1)
     label.Font = Enum.Font.GothamSemibold
+    label.TextSize = 18
     label.TextXAlignment = Enum.TextXAlignment.Left
-    label.TextSize = 17
-    label.Parent = frame
+    label.Parent = toggleFrame
 
-    local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0, 95, 0, 38)
-    btn.Position = UDim2.new(0.78, 0, 0.5, -19)
-    btn.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
-    btn.Text = "OFF"
-    btn.TextColor3 = Color3.new(1,1,1)
-    btn.Font = Enum.Font.GothamBold
-    btn.TextSize = 15
-    btn.Parent = frame
+    local button = Instance.new("TextButton")
+    button.Size = UDim2.new(0, 100, 0, 40)
+    button.Position = UDim2.new(0.75, 0, 0.5, -20)
+    button.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+    button.Text = "OFF"
+    button.TextColor3 = Color3.new(1,1,1)
+    button.Font = Enum.Font.GothamBold
+    button.TextSize = 16
+    button.Parent = toggleFrame
 
-    local bc = Instance.new("UICorner")
-    bc.CornerRadius = UDim.new(0, 20)
-    bc.Parent = btn
+    local btnCorner = Instance.new("UICorner")
+    btnCorner.CornerRadius = UDim.new(0, 20)
+    btnCorner.Parent = button
 
-    local enabled = false
-    btn.MouseButton1Click:Connect(function()
-        enabled = not enabled
-        if enabled then
-            btn.BackgroundColor3 = Color3.fromRGB(0, 255, 120)
-            btn.Text = "ON"
+    local state = false
+    button.MouseButton1Click:Connect(function()
+        state = not state
+        if state then
+            button.BackgroundColor3 = Color3.fromRGB(0, 255, 100)
+            button.Text = "ON"
         else
-            btn.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
-            btn.Text = "OFF"
+            button.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+            button.Text = "OFF"
         end
     end)
 end
 
--- Boutons
-CreateToggle("🔴 Auto Farm Level")
-CreateToggle("⚔️ Kill Aura")
-CreateToggle("🎯 Aim Bot")
-CreateToggle("👑 Auto Boss")
-CreateToggle("🍎 Auto Fruit")
-CreateToggle("🏴 Auto Quest")
-CreateToggle("⚡ Auto Skills")
-CreateToggle("🛡️ Auto Haki")
-CreateToggle("🌊 Auto Sea Event")
+-- Liste des fonctions
+addToggle("🔴 Auto Farm Level")
+addToggle("⚔️ Kill Aura")
+addToggle("🎯 Aim Bot")
+addToggle("👑 Auto Boss")
+addToggle("🍎 Auto Fruit")
+addToggle("🏴 Auto Quest")
+addToggle("⚡ Auto Skills")
+addToggle("🛡️ Auto Haki")
+addToggle("🌊 Auto Sea Event")
+addToggle("⚔️ Auto Dungeon")
 
-print("✅ KinderzHub chargé avec succès ! Appuie sur INSERT pour ouvrir/fermer")
+print("✅ KinderzHub chargé avec succès !")
+print("Appuie sur **INSERT** pour ouvrir / fermer le menu")
 
--- Touche INSERT pour ouvrir/fermer le menu
-local UserInputService = game:GetService("UserInputService")
-UserInputService.InputBegan:Connect(function(input)
+-- Touche INSERT
+game:GetService("UserInputService").InputBegan:Connect(function(input)
     if input.KeyCode == Enum.KeyCode.Insert then
-        gui.Enabled = not gui.Enabled
+        screenGui.Enabled = not screenGui.Enabled
     end
 end)
