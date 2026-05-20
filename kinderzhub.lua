@@ -1,17 +1,25 @@
--- KinderzHub - King Legacy
--- Made for testing
+-- KinderzHub - Version Fixée
+print("✅ KinderzHub est en train de se charger...")
 
 local player = game.Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- Supprime l'ancien GUI s'il existe déjà
+if playerGui:FindFirstChild("KinderzHub") then
+    playerGui.KinderzHub:Destroy()
+end
+
 local gui = Instance.new("ScreenGui")
 gui.Name = "KinderzHub"
 gui.ResetOnSpawn = false
-gui.Parent = player:WaitForChild("PlayerGui")
+gui.IgnoreGuiInset = true
+gui.Parent = playerGui
 
 -- Main Frame
 local main = Instance.new("Frame")
 main.Name = "MainFrame"
-main.Size = UDim2.new(0, 460, 0, 400)
-main.Position = UDim2.new(0.5, -230, 0.5, -200)
+main.Size = UDim2.new(0, 460, 0, 420)
+main.Position = UDim2.new(0.5, -230, 0.5, -210)
 main.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
 main.BorderSizePixel = 0
 main.Parent = gui
@@ -23,11 +31,11 @@ corner.Parent = main
 -- Titre
 local title = Instance.new("TextLabel")
 title.Size = UDim2.new(1, 0, 0, 60)
-title.BackgroundColor3 = Color3.fromRGB(255, 85, 0)  -- Orange style
+title.BackgroundColor3 = Color3.fromRGB(255, 85, 0)
 title.Text = "KinderzHub"
 title.TextColor3 = Color3.new(1,1,1)
 title.Font = Enum.Font.GothamBold
-title.TextSize = 24
+title.TextSize = 26
 title.Parent = main
 
 local titleCorner = Instance.new("UICorner")
@@ -39,18 +47,18 @@ local version = Instance.new("TextLabel")
 version.Size = UDim2.new(1, 0, 0, 20)
 version.Position = UDim2.new(0, 0, 0, 40)
 version.BackgroundTransparency = 1
-version.Text = "King Legacy • Free Version"
-version.TextColor3 = Color3.fromRGB(255, 200, 100)
+version.Text = "King Legacy • Free"
+version.TextColor3 = Color3.fromRGB(255, 180, 80)
 version.Font = Enum.Font.Gotham
 version.TextSize = 14
 version.Parent = main
 
--- ScrollingFrame
+-- Scrolling
 local scroll = Instance.new("ScrollingFrame")
-scroll.Size = UDim2.new(1, -20, 1, -90)
+scroll.Size = UDim2.new(1, -20, 1, -100)
 scroll.Position = UDim2.new(0, 10, 0, 70)
 scroll.BackgroundTransparency = 1
-scroll.ScrollBarThickness = 5
+scroll.ScrollBarThickness = 6
 scroll.Parent = main
 
 local layout = Instance.new("UIListLayout")
@@ -63,11 +71,11 @@ local function CreateToggle(name)
     frame.Size = UDim2.new(1, -10, 0, 58)
     frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
     frame.Parent = scroll
-    
+
     local c = Instance.new("UICorner")
     c.CornerRadius = UDim.new(0, 12)
     c.Parent = frame
-    
+
     local label = Instance.new("TextLabel")
     label.Size = UDim2.new(0.65, 0, 1, 0)
     label.BackgroundTransparency = 1
@@ -77,7 +85,7 @@ local function CreateToggle(name)
     label.TextXAlignment = Enum.TextXAlignment.Left
     label.TextSize = 17
     label.Parent = frame
-    
+
     local btn = Instance.new("TextButton")
     btn.Size = UDim2.new(0, 95, 0, 38)
     btn.Position = UDim2.new(0.78, 0, 0.5, -19)
@@ -87,13 +95,12 @@ local function CreateToggle(name)
     btn.Font = Enum.Font.GothamBold
     btn.TextSize = 15
     btn.Parent = frame
-    
+
     local bc = Instance.new("UICorner")
     bc.CornerRadius = UDim.new(0, 20)
     bc.Parent = btn
-    
+
     local enabled = false
-    
     btn.MouseButton1Click:Connect(function()
         enabled = not enabled
         if enabled then
@@ -106,7 +113,7 @@ local function CreateToggle(name)
     end)
 end
 
--- === Boutons du Hub ===
+-- Boutons
 CreateToggle("🔴 Auto Farm Level")
 CreateToggle("⚔️ Kill Aura")
 CreateToggle("🎯 Aim Bot")
@@ -117,4 +124,12 @@ CreateToggle("⚡ Auto Skills")
 CreateToggle("🛡️ Auto Haki")
 CreateToggle("🌊 Auto Sea Event")
 
-print("✅ KinderzHub chargé avec succès !")
+print("✅ KinderzHub chargé avec succès ! Appuie sur INSERT pour ouvrir/fermer")
+
+-- Touche INSERT pour ouvrir/fermer le menu
+local UserInputService = game:GetService("UserInputService")
+UserInputService.InputBegan:Connect(function(input)
+    if input.KeyCode == Enum.KeyCode.Insert then
+        gui.Enabled = not gui.Enabled
+    end
+end)
