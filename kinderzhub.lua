@@ -13,10 +13,6 @@ local playerGui = player:WaitForChild("PlayerGui")
 
 pcall(function() playerGui:FindFirstChild("KinderzHub"):Destroy() end)
 
--- ═══════════════════════════════════════════════════════════════════
--- 📋 CONFIGURATION ULTIME
--- ═══════════════════════════════════════════════════════════════════
-
 local CONFIG = {
     COLORS = {
         PRIMARY = Color3.fromRGB(255, 125, 45),
@@ -117,10 +113,6 @@ local CONFIG = {
     }
 }
 
--- ═══════════════════════════════════════════════════════════════════
--- 🎮 STATE & LOGGER
--- ═══════════════════════════════════════════════════════════════════
-
 local UIState = {
     Features = {},
     ActiveCategory = "FARMING",
@@ -143,10 +135,6 @@ function Logger:Print(prefix, message)
 end
 
 Logger:Print("🍫", "KinderzHub ULTIMATE - Chargement...")
-
--- ═══════════════════════════════════════════════════════════════════
--- 🛠️ FONCTIONS UTILITAIRES
--- ═══════════════════════════════════════════════════════════════════
 
 local function CreateElement(className, properties)
     local element = Instance.new(className)
@@ -253,10 +241,6 @@ local function FindAllNearbyItems(maxDistance, itemType)
     table.sort(items, function(a, b) return a.distance < b.distance end)
     return items
 end
-
--- ═══════════════════════════════════════════════════════════════════
--- 🌾 FARMING FEATURES
--- ═══════════════════════════════════════════════════════════════════
 
 local function AutoFarmExp(enabled)
     if enabled then
@@ -447,10 +431,6 @@ local function AutoCoinCollect(enabled)
     end
 end
 
--- ═══════════════════════════════════════════════════════════════════
--- ⚔️ COMBAT FEATURES
--- ═══════════════════════════════════════════════════════════════════
-
 local function KillAura(enabled)
     if enabled then
         UIState.RunningCoroutines["KillAura"] = task.spawn(function()
@@ -588,10 +568,6 @@ local function TargetClosest(enabled)
     end
 end
 
--- ═══════════════════════════════════════════════════════════════════
--- 📦 COLLECTION FEATURES
--- ═══════════════════════════════════════════════════════════════════
-
 local function AutoCoinPickup(enabled)
     if enabled then
         UIState.RunningCoroutines["AutoCoinPickup"] = task.spawn(function()
@@ -695,10 +671,6 @@ local function AutoChestOpen(enabled)
     end
 end
 
--- ═══════════════════════════════════════════════════════════════════
--- 🗺️ TELEPORT FEATURES
--- ═══════════════════════════════════════════════════════════════════
-
 local function TeleportSpawn(enabled)
     if enabled then
         Logger:Print("🏠", "Téléportation au Spawn...")
@@ -765,10 +737,6 @@ local function TeleportShop(enabled)
         end
     end
 end
-
--- ═══════════════════════════════════════════════════════════════════
--- 👁️ WORLD / ESP FEATURES
--- ═══════════════════════════════════════════════════════════════════
 
 local function ESPPlayers(enabled)
     if enabled then
@@ -880,10 +848,6 @@ local function ShowDistance(enabled)
         end
     end
 end
-
--- ═══════════════════════════════════════════════════════════════════
--- 🛠️ TOOLS FEATURES
--- ═══════════════════════════════════════════════════════════════════
 
 local function SpeedHack(enabled)
     if enabled then
@@ -1014,10 +978,6 @@ local function AntiStun(enabled)
     end
 end
 
--- ═══════════════════════════════════════════════════════════════════
--- 🔧 AUTOMATION FEATURES
--- ═══════════════════════════════════════════════════════════════════
-
 local function AutoSellAll(enabled)
     if enabled then
         UIState.RunningCoroutines["AutoSellAll"] = task.spawn(function()
@@ -1086,10 +1046,6 @@ local function AutoClaimReward(enabled)
     end
 end
 
--- ═══════════════════════════════════════════════════════════════════
--- ⚙️ MISC FEATURES
--- ═══════════════════════════════════════════════════════════════════
-
 local function AntiAFK(enabled)
     if enabled then
         UIState.RunningCoroutines["AntiAFK"] = task.spawn(function()
@@ -1146,10 +1102,6 @@ local function FPSBoost(enabled)
         end
     end
 end
-
--- ═══════════════════════════════════════════════════════════════════
--- 🔌 EXÉCUTION DES FEATURES
--- ═══════════════════════════════════════════════════════════════════
 
 function ExecuteFeature(featureKey, isEnabled)
     local category, rawFeature = featureKey:match("^(.-)_(.+)$")
@@ -1219,10 +1171,6 @@ function ExecuteFeature(featureKey, isEnabled)
         end
     end
 end
-
--- ═══════════════════════════════════════════════════════════════════
--- 🖼️ CRÉATION DE L'UI COMPLÈTE
--- ═══════════════════════════════════════════════════════════════════
 
 local screenGui = CreateElement("ScreenGui", {
     Name = "KinderzHub",
@@ -1376,9 +1324,7 @@ local function LoadCategory(categoryKey)
     local features = CONFIG.TOGGLE_FEATURES[categoryKey] or {}
     
     for index, featureName in ipairs(features) do
-        local cleanFeatureName = featureName
-            :gsub("[^%w%s]", "")
-            :gsub("%s+", "_")
+        local cleanFeatureName = featureName:gsub("[^%w%s]", ""):gsub("%s+", "_")
         local featureKey = categoryKey .. "_" .. cleanFeatureName
         local toggle = CreateToggle(featureName, featureKey)
         toggle.LayoutOrder = index
@@ -1443,10 +1389,6 @@ task.wait(0.1)
 UIState.CategoryButtons["FARMING"].BackgroundColor3 = CONFIG.COLORS.PRIMARY
 LoadCategory("FARMING")
 
--- ═══════════════════════════════════════════════════════════════════
--- 🎮 DRAG & DROP
--- ═══════════════════════════════════════════════════════════════════
-
 local dragging = false
 local dragStart = nil
 local startPos = nil
@@ -1478,9 +1420,6 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
--- ═══════════════════════════════════════════════════════════════════
--- ⌨️ CONTRÔLES CLAVIER
--- ═══════════════════════════════════════════════════════════════════
 
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end
@@ -1495,10 +1434,6 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
         screenGui:Destroy()
     end
 end)
-
--- ═══════════════════════════════════════════════════════════════════
--- 🔌 CLEANUP
--- ═══════════════════════════════════════════════════════════════════
 
 player.CharacterAdded:Connect(function(newCharacter)
     for key, coroutine in pairs(UIState.RunningCoroutines) do
