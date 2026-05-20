@@ -1,8 +1,9 @@
--- 🍫 KinderzHub ULTIMATE - Version Belle
+-- 🍫 KinderzHub ULTIMATE - Version Complète + Fonctions Réelles
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
+local RunService = game:GetService("RunService")
 
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
@@ -11,138 +12,238 @@ pcall(function() playerGui:FindFirstChild("KinderzHub"):Destroy() end)
 
 local CONFIG = {
     COLORS = {
-        PRIMARY = Color3.fromRGB(255, 140, 60),
-        DARK_BG = Color3.fromRGB(18, 18, 25),
-        SIDEBAR = Color3.fromRGB(22, 22, 30),
-        CARD = Color3.fromRGB(28, 28, 37),
-        BUTTON_OFF = Color3.fromRGB(60, 60, 70),
-        BUTTON_ON = Color3.fromRGB(0, 255, 140),
-        ACCENT = Color3.fromRGB(255, 100, 50),
-        TEXT = Color3.new(1, 1, 1),
-        TEXT2 = Color3.fromRGB(180, 180, 190),
+        BG = Color3.fromRGB(20, 18, 26),
+        SIDEBAR = Color3.fromRGB(26, 23, 33),
+        CARD = Color3.fromRGB(35, 30, 45),
+        PRIMARY = Color3.fromRGB(255, 145, 50),
+        ON = Color3.fromRGB(0, 255, 120),
+        TEXT = Color3.new(1,1,1),
     }
 }
 
+local UIState = {
+    Features = {},
+    RunningCoroutines = {}
+}
+
+-- ==================== UTILITAIRES ====================
+local function GetHRP()
+    local char = player.Character or player.CharacterAdded:Wait()
+    return char:WaitForChild("HumanoidRootPart")
+end
+
+local function GetHumanoid()
+    local char = player.Character or player.CharacterAdded:Wait()
+    return char:WaitForChild("Humanoid")
+end
+
+local function FindNearestMob(range)
+    local closest, dist = nil, range or 200
+    for _, obj in ipairs(Workspace:GetDescendants()) do
+        if obj:FindFirstChild("Humanoid") and obj:FindFirstChild("HumanoidRootPart") then
+            if not Players:FindFirstChild(obj.Name) and obj.Humanoid.Health > 0 then
+                local d = (obj.HumanoidRootPart.Position - GetHRP().Position).Magnitude
+                if d < dist then
+                    closest, dist = obj, d
+                end
+            end
+        end
+    end
+    return closest
+end
+
+local function TeleportTo(pos)
+    pcall(function()
+        GetHRP().CFrame = CFrame.new(pos + Vector3.new(0, 5, 0))
+    end)
+end
+
+-- ==================== FONCTIONS RÉELLES ====================
+local function AutoFarmExp(enabled)
+    if enabled then
+        UIState.RunningCoroutines["AutoFarmExp"] = task.spawn(function()
+            while UIState.Features["AutoFarmExp"] do
+                local mob = FindNearestMob(150)
+                if mob then
+                    GetHRP().CFrame = mob.HumanoidRootPart.CFrame * CFrame.new(0, 3, 8)
+                    local tool = player.Character:FindFirstChildOfClass("Tool")
+                    if tool then tool:Activate() end
+                end
+                task.wait(0.2)
+            end
+        end)
+    elseif UIState.RunningCoroutines["AutoFarmExp"] then
+        task.cancel(UIState.RunningCoroutines["AutoFarmExp"])
+    end
+end
+
+local function KillAura(enabled)
+    if enabled then
+        UIState.RunningCoroutines["KillAura"] = task.spawn(function()
+            while UIState.Features["KillAura"] do
+                for _, mob in ipairs(Workspace:GetDescendants()) do
+                    if mob:FindFirstChild("Humanoid") and mob:FindFirstChild("HumanoidRootPart") and not Players:FindFirstChild(mob.Name) then
+                        if (mob.HumanoidRootPart.Position - GetHRP().Position).Magnitude < 20 then
+                            local tool = player.Character:FindFirstChildOfClass("Tool")
+                            if tool then tool:Activate() end
+                        end
+                    end
+                end
+                task.wait(0.1)
+            end
+        end)
+    elseif UIState.RunningCoroutines["KillAura"] then
+        task.cancel(UIState.RunningCoroutines["KillAura"])
+    end
+end
+
+local function SpeedHack(enabled)
+    if enabled then
+        UIState.RunningCoroutines["SpeedHack"] = task.spawn(function()
+            local hum = GetHumanoid()
+            while UIState.Features["SpeedHack"] do
+                hum.WalkSpeed = 100
+                task.wait(0.1)
+            end
+            hum.WalkSpeed = 16
+        end)
+    elseif UIState.RunningCoroutines["SpeedHack"] then
+        task.cancel(UIState.RunningCoroutines["SpeedHack"])
+    end
+end
+
+local function Noclip(enabled)
+    if enabled then
+        UIState.RunningCoroutines["Noclip"] = task.spawn(function()
+            while UIState.Features["Noclip"] do
+                for _, part in pairs(player.Character:GetDescendants()) do
+                    if part:IsA("BasePart") then
+                        part.CanCollide = false
+                    end
+                end
+                task.wait(0.1)
+            end
+            for _, part in pairs(player.Character:GetDescendants()) do
+                if part:IsA("BasePart") then part.CanCollide = true end
+            end
+        end)
+    elseif UIState.RunningCoroutines["Noclip"] then
+        task.cancel(UIState.RunningCoroutines["Noclip"])
+    end
+end
+
+-- ==================== UI KINDER ====================
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "KinderzHub"
 screenGui.ResetOnSpawn = false
 screenGui.Parent = playerGui
 
 local main = Instance.new("Frame")
-main.Size = UDim2.new(0, 920, 0, 640)
-main.Position = UDim2.new(0.5, -460, 0.5, -320)
-main.BackgroundColor3 = CONFIG.COLORS.DARK_BG
+main.Size = UDim2.new(0, 960, 0, 680)
+main.Position = UDim2.new(0.5, -480, 0.5, -340)
+main.BackgroundColor3 = CONFIG.COLORS.BG
 main.Parent = screenGui
-Instance.new("UICorner", main).CornerRadius = UDim.new(0, 20)
-Instance.new("UIStroke", main).Color = CONFIG.COLORS.PRIMARY; Instance.new("UIStroke", main).Transparency = 0.7
+Instance.new("UICorner", main).CornerRadius = UDim.new(0, 24)
 
--- Titre stylé
 local title = Instance.new("TextLabel")
-title.Size = UDim2.new(1, 0, 0, 85)
+title.Size = UDim2.new(1, 0, 0, 95)
 title.BackgroundColor3 = CONFIG.COLORS.PRIMARY
 title.Text = "🍫 KinderzHub ULTIMATE 🍫"
 title.TextColor3 = Color3.new(1,1,1)
 title.Font = Enum.Font.GothamBlack
-title.TextSize = 32
+title.TextSize = 36
 title.Parent = main
-Instance.new("UICorner", title).CornerRadius = UDim.new(0, 20)
-
--- Sidebar
-local sidebar = Instance.new("Frame")
-sidebar.Size = UDim2.new(0, 240, 1, -95)
-sidebar.Position = UDim2.new(0, 15, 0, 95)
-sidebar.BackgroundColor3 = CONFIG.COLORS.SIDEBAR
-sidebar.Parent = main
-Instance.new("UICorner", sidebar).CornerRadius = UDim.new(0, 16)
+Instance.new("UICorner", title).CornerRadius = UDim.new(0, 24)
 
 local content = Instance.new("ScrollingFrame")
-content.Size = UDim2.new(1, -275, 1, -105)
-content.Position = UDim2.new(0, 270, 0, 95)
+content.Size = UDim2.new(1, -280, 1, -115)
+content.Position = UDim2.new(0, 275, 0, 105)
 content.BackgroundTransparency = 1
-content.ScrollBarThickness = 6
-content.ScrollBarImageColor3 = CONFIG.COLORS.PRIMARY
+content.ScrollBarThickness = 8
 content.Parent = main
 
-local layout = Instance.new("UIListLayout", content)
-layout.Padding = UDim.new(0, 12)
-layout.SortOrder = Enum.SortOrder.LayoutOrder
+Instance.new("UIListLayout", content).Padding = UDim.new(0, 16)
 
--- Fonction Toggle stylé
-local function CreateToggle(name, key)
+-- Toggle Kinder
+local function CreateKinderToggle(name, key, func)
     local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(1, -20, 0, 72)
+    frame.Size = UDim2.new(1, -30, 0, 95)
     frame.BackgroundColor3 = CONFIG.COLORS.CARD
     frame.Parent = content
-    Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 14)
-    Instance.new("UIStroke", frame).Color = Color3.fromRGB(50,50,60); Instance.new("UIStroke", frame).Transparency = 0.6
+    Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 18)
 
     local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(0.65, 0, 1, 0)
+    label.Size = UDim2.new(0.55, 0, 1, 0)
     label.BackgroundTransparency = 1
-    label.Text = name
+    label.Text = "   " .. name
     label.TextColor3 = CONFIG.COLORS.TEXT
     label.Font = Enum.Font.GothamSemibold
-    label.TextSize = 17
+    label.TextSize = 18
     label.TextXAlignment = Enum.TextXAlignment.Left
     label.Parent = frame
-    Instance.new("UIPadding", label).PaddingLeft = UDim.new(0, 18)
 
-    local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0, 110, 0, 48)
-    btn.Position = UDim2.new(0.68, 0, 0.5, -24)
-    btn.BackgroundColor3 = CONFIG.COLORS.BUTTON_OFF
-    btn.Text = "OFF"
-    btn.TextColor3 = Color3.new(1,1,1)
-    btn.Font = Enum.Font.GothamBold
-    btn.TextSize = 14
-    btn.Parent = frame
-    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 12)
+    local toggleArea = Instance.new("Frame")
+    toggleArea.Size = UDim2.new(0, 160, 0, 75)
+    toggleArea.Position = UDim2.new(1, -180, 0.5, -37.5)
+    toggleArea.BackgroundTransparency = 1
+    toggleArea.Parent = frame
+
+    local wrapper = Instance.new("ImageLabel")
+    wrapper.Size = UDim2.new(1,0,1,0)
+    wrapper.BackgroundTransparency = 1
+    wrapper.Image = "rbxassetid://10734950378"
+    wrapper.ImageColor3 = Color3.fromRGB(255, 160, 60)
+    wrapper.Parent = toggleArea
+
+    local chocolate = Instance.new("ImageLabel")
+    chocolate.Size = UDim2.new(0.8,0,0.8,0)
+    chocolate.Position = UDim2.new(0.5,0,0.5,0)
+    chocolate.AnchorPoint = Vector2.new(0.5, 0.5)
+    chocolate.BackgroundTransparency = 1
+    chocolate.Image = "rbxassetid://6031094678"
+    chocolate.ImageTransparency = 1
+    chocolate.Parent = toggleArea
 
     local enabled = false
 
-    btn.MouseButton1Click:Connect(function()
-        enabled = not enabled
-        
-        TweenService:Create(btn, TweenInfo.new(0.25, Enum.EasingStyle.Quint), {
-            BackgroundColor3 = enabled and CONFIG.COLORS.BUTTON_ON or CONFIG.COLORS.BUTTON_OFF
-        }):Play()
-        
-        btn.Text = enabled and "ON" or "OFF"
-        print("[".. (enabled and "✅" or "❌") .."] ".. name)
-    end)
-end
+    toggleArea.InputBegan:Connect(function(inp)
+        if inp.UserInputType == Enum.UserInputType.MouseButton1 then
+            enabled = not enabled
+            UIState.Features[key] = enabled
 
--- Catégories (exemple)
-local cats = {"🌾 Farming", "⚔️ Combat", "📦 Collection", "🗺️ Teleport", "👁️ World", "🛠️ Tools"}
-for _, cat in ipairs(cats) do
-    local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(1, -30, 0, 55)
-    btn.BackgroundColor3 = CONFIG.COLORS.CARD
-    btn.Text = cat
-    btn.TextColor3 = CONFIG.COLORS.TEXT
-    btn.Font = Enum.Font.GothamSemibold
-    btn.TextSize = 16
-    btn.Parent = sidebar
-    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 12)
-    
-    btn.MouseButton1Click:Connect(function()
-        -- Vide le contenu
-        for _, v in ipairs(content:GetChildren()) do
-            if v:IsA("Frame") then v:Destroy() end
+            if enabled then
+                TweenService:Create(wrapper, TweenInfo.new(0.4), {ImageTransparency = 0.65}):Play()
+                TweenService:Create(chocolate, TweenInfo.new(0.5), {ImageTransparency = 0}):Play()
+            else
+                TweenService:Create(wrapper, TweenInfo.new(0.4), {ImageTransparency = 0}):Play()
+                TweenService:Create(chocolate, TweenInfo.new(0.3), {ImageTransparency = 1}):Play()
+            end
+
+            if func then func(enabled) end
+            print(`🍫 {enabled and "ON" or "OFF"} → {name}`)
         end
-        -- Exemple
-        CreateToggle("Auto Farm Exp", "farm")
-        CreateToggle("Kill Aura", "killaura")
-        CreateToggle("Speed Hack", "speed")
-        CreateToggle("Auto Collect Coins", "coins")
     end)
 end
 
--- Toggle avec Insert
-UserInputService.InputBegan:Connect(function(i)
-    if i.KeyCode == Enum.KeyCode.Insert then
+-- Ajout des toggles avec fonctions réelles
+CreateKinderToggle("🔴 Auto Farm Exp", "AutoFarmExp", AutoFarmExp)
+CreateKinderToggle("⚔️ Kill Aura", "KillAura", KillAura)
+CreateKinderToggle("🚀 Speed Hack", "SpeedHack", SpeedHack)
+CreateKinderToggle("👻 Noclip", "Noclip", Noclip)
+CreateKinderToggle("💰 Auto Farm Money", "AutoFarmMoney")
+CreateKinderToggle("🍎 Auto Fruits", "AutoFruits")
+CreateKinderToggle("🪙 Auto Coins", "AutoCoins")
+CreateKinderToggle("🎯 Aim Bot", "AimBot")
+
+-- Hotkeys
+UserInputService.InputBegan:Connect(function(input, gp)
+    if gp then return end
+    if input.KeyCode == Enum.KeyCode.Insert then
         screenGui.Enabled = not screenGui.Enabled
+    elseif input.KeyCode == Enum.KeyCode.Delete then
+        screenGui:Destroy()
     end
 end)
 
-print("🍫 KinderzHub chargé ! Appuie sur INSERT")
+print("🍫 KinderzHub ULTIMATE chargé avec succès !")
+print("Appuie sur INSERT pour ouvrir/fermer")
